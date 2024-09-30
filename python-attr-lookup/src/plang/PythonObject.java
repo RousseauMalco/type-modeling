@@ -71,7 +71,7 @@ public class PythonObject {
 
             if (objectResult != null) {
                 return objectResult;
-            } else if (attrs.containsKey(attrName)) {
+            } else if (element.attrs.containsKey(attrName)) {
                 return null;
             }
         }

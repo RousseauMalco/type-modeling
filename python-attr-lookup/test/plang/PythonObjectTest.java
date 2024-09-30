@@ -155,15 +155,13 @@ class PythonObjectTest {
         // Equivalent Python:
         //
         //   Foo.socks = "rainbow"
-        //   foo.socks = null
+        //   Bar.socks = null
 
         fooType.set("socks", new PythonString("gradient"));
-        foo.set("socks", null);
+        barType.set("socks", null);
 
-        assertEqualsPyStr("gradient",    fooType.get("socks"));
-        assertEqualsPyStr(null, foo.get("socks"));
-        assertEqualsPyStr("gradient",    barType.get("socks"));
-        assertEqualsPyStr("gradient",    bar.get("socks"));
+        assertEqualsPyStr(null,    barType.get("socks"));
+        assertEqualsPyStr(null,    bar.get("socks"));
     }
 
     // –––––– Helpers ––––––

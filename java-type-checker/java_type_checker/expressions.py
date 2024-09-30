@@ -83,7 +83,8 @@ class JavaAssignment(JavaExpression):
     
     def check_types(self):
         if (self.lhs.static_type() != self.rhs.static_type()):
-            raise JavaTypeMismatchError("Cannot assign {0} to {1} of type {2}".format(self.rhs.static_type(), self.lhs, self.lhs.static_type()))
+            raise JavaTypeMismatchError("Cannot assign {0} to variable {1} of type {2}".format(
+                self.rhs.static_type().name, self.lhs.name, self.lhs.static_type().name))
 
 
 class JavaMethodCall(JavaExpression):
