@@ -82,10 +82,12 @@ class JavaAssignment(JavaExpression):
         return self.lhs.static_type()
     
     def check_types(self):
+        rhs_type = self.rhs.static_type()
+        lhs_type = self.lhs.static_type()
         self.rhs.check_types()
-        if (not self.lhs.static_type().is_supertype_of(self.rhs.static_type()) and self.lhs.static_type() != self.rhs.static_type()):
+        if (not lhs_type.is_supertype_of(rhs_type) and lhs_type != rhs_type):
             raise JavaTypeMismatchError("Cannot assign {0} to variable {1} of type {2}".format(
-                self.rhs.static_type().name, self.lhs.name, self.lhs.static_type().name))
+                rhs_type.name, self.lhs.name, lhs_type.name))
         
 
 class JavaMethodCall(JavaExpression):
@@ -108,21 +110,21 @@ class JavaMethodCall(JavaExpression):
         self.receiver = receiver
         self.method_name = method_name
         self.args = args
-        self.check_types()
-        # test = self.args
-        # if (isinstance(self.args, JavaMethodCall)):
-        #     self.args[0].check_types()
 
     def static_type(self):
         return self.receiver.declared_type.method_named(self.method_name).return_type
     
     def check_types(self):
+        self.receiver.check_types()
+        for element in self.args:
+            element.check_types()
+
         self.receiver.static_type().method_named(self.method_name)
 
         expected_args = self.receiver.static_type().method_named(self.method_name).parameter_types
         given_args = [element.static_type() for element in self.args]
 
-        if (len(expected_args) != len(self.args)):
+        if (len(expected_args) != len(given_args)):
             raise JavaArgumentCountError("Wrong number of arguments for {0}.{1}(): expected {2}, got {3}".format(
                 self.receiver.static_type().name, self.method_name, len(expected_args), len(given_args)))
         
@@ -133,11 +135,11 @@ class JavaMethodCall(JavaExpression):
                 error = True
         
         if (error):
-            expected_as_list = [element.name for element in expected_args]
-            given_as_list = [element.name for element in given_args]
+            expected_arg_names = [element.name for element in expected_args]
+            given_arg_names = [element.name for element in given_args]
             delim = ", "
             raise JavaTypeMismatchError("{0}.{1}() expects arguments of type ({2}), but got ({3})".format(
-                self.receiver.static_type().name, self.method_name, delim.join(expected_as_list), delim.join(given_as_list)))
+                self.receiver.static_type().name, self.method_name, delim.join(expected_arg_names), delim.join(given_arg_names)))
         
         
 
